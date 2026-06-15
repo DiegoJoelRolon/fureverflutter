@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fureverflutter/auth/AuthGate.dart';
 import 'navigation/Navigation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
           seedColor: Colors.orange,
         ),
       ),
-      home: const Navigation(),
+      home: const AuthGate(),
     );
   }
 }
