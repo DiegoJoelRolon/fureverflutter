@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'UserFlutter.dart';
@@ -9,18 +9,14 @@ part of 'UserFlutter.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$UserFlutter {
 
- String get uid; String get name; String get lastname; String get email; String get phone; String get city; double get latitude; double get longitude; String get profileImageUrl; List<String> get favorites;// IDs de mascotas favoritas
- bool get hasCompletedOnboarding;// si ya hizo el onboarding
- String get prefSpecies;// preferencia especie
- String get prefSize;// preferencia tamaño
- String get prefAge;// preferencia edad
- String get prefGender;
+ String get uid; String get name; String get lastname; String get email; String get phone; String get city; double get latitude; double get longitude; String get profileImageUrl; List<String> get favorites; bool get hasCompletedOnboarding; String get prefSpecies; String get prefSize; String get prefAge; String get prefGender;
 /// Create a copy of UserFlutter
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -71,7 +67,7 @@ class _$UserFlutterCopyWithImpl<$Res>
 /// Create a copy of UserFlutter
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? name = null,Object? lastname = null,Object? email = null,Object? phone = null,Object? city = null,Object? latitude = null,Object? longitude = null,Object? profileImageUrl = null,Object? favorites = null,Object? hasCompletedOnboarding = null,Object? prefSpecies = null,Object? prefSize = null,Object? prefAge = null,Object? prefGender = null,}) {
-  return _then(_self.copyWith(
+  return _then(UserFlutter(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,lastname: null == lastname ? _self.lastname : lastname // ignore: cast_nullable_to_non_nullable
@@ -228,7 +224,7 @@ return $default(_that.uid,_that.name,_that.lastname,_that.email,_that.phone,_tha
 @JsonSerializable()
 
 class _UserFlutter implements UserFlutter {
-  const _UserFlutter({this.uid = '', this.name = '', this.lastname = '', this.email = '', this.phone = '', this.city = '', this.latitude = 0.0, this.longitude = 0.0, this.profileImageUrl = '', final  List<String> favorites = const [], this.hasCompletedOnboarding = false, this.prefSpecies = '', this.prefSize = '', this.prefAge = '', this.prefGender = ''}): _favorites = favorites;
+  const _UserFlutter({this.uid = '', this.name = '', this.lastname = '', this.email = '', this.phone = '', this.city = '', this.latitude = 0.0, this.longitude = 0.0, this.profileImageUrl = '',  List<String> favorites = const [], this.hasCompletedOnboarding = false, this.prefSpecies = '', this.prefSize = '', this.prefAge = '', this.prefGender = ''}): _favorites = favorites;
   factory _UserFlutter.fromJson(Map<String, dynamic> json) => _$UserFlutterFromJson(json);
 
 @override@JsonKey() final  String uid;
@@ -247,15 +243,10 @@ class _UserFlutter implements UserFlutter {
   return EqualUnmodifiableListView(_favorites);
 }
 
-// IDs de mascotas favoritas
 @override@JsonKey() final  bool hasCompletedOnboarding;
-// si ya hizo el onboarding
 @override@JsonKey() final  String prefSpecies;
-// preferencia especie
 @override@JsonKey() final  String prefSize;
-// preferencia tamaño
 @override@JsonKey() final  String prefAge;
-// preferencia edad
 @override@JsonKey() final  String prefGender;
 
 /// Create a copy of UserFlutter

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../navigation/Navigation.dart';
 import '../screens/LoginScreen.dart';
 
@@ -12,20 +11,17 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-
-        if (snapshot.connectionState ==
-            ConnectionState.waiting) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
+            backgroundColor: Color(0xFFF5F0EB),
             body: Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: Color(0xFF5C4033)),
             ),
           );
         }
-
         if (snapshot.hasData) {
           return const Navigation();
         }
-
         return const LoginScreen();
       },
     );

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'AdoptionRequest.dart';
@@ -9,17 +9,14 @@ part of 'AdoptionRequest.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
 /// @nodoc
 mixin _$AdoptionRequest {
 
- String get id; String get petId; String get petName; String get petImageUrl; String get requesterId;// email del solicitante
- String get requesterName;// nombre del solicitante
- String get ownerId;// email del dueño
- String get status;// pending / accepted / rejected
- int get timestamp;
+ String get id; String get petId; String get petName; String get petImageUrl; String get requesterId; String get requesterName; String get ownerId; String get status; int get timestamp;
 /// Create a copy of AdoptionRequest
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -70,7 +67,7 @@ class _$AdoptionRequestCopyWithImpl<$Res>
 /// Create a copy of AdoptionRequest
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? petId = null,Object? petName = null,Object? petImageUrl = null,Object? requesterId = null,Object? requesterName = null,Object? ownerId = null,Object? status = null,Object? timestamp = null,}) {
-  return _then(_self.copyWith(
+  return _then(AdoptionRequest(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,petId: null == petId ? _self.petId : petId // ignore: cast_nullable_to_non_nullable
 as String,petName: null == petName ? _self.petName : petName // ignore: cast_nullable_to_non_nullable
@@ -229,13 +226,9 @@ class _AdoptionRequest implements AdoptionRequest {
 @override@JsonKey() final  String petName;
 @override@JsonKey() final  String petImageUrl;
 @override@JsonKey() final  String requesterId;
-// email del solicitante
 @override@JsonKey() final  String requesterName;
-// nombre del solicitante
 @override@JsonKey() final  String ownerId;
-// email del dueño
 @override@JsonKey() final  String status;
-// pending / accepted / rejected
 @override@JsonKey() final  int timestamp;
 
 /// Create a copy of AdoptionRequest
