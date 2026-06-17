@@ -1,4 +1,4 @@
-// ignore_for_file: camel_case_types
+// ignore_for_file: file_names, camel_case_types
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -6,7 +6,7 @@ part 'AdoptionRequest.freezed.dart';
 part 'AdoptionRequest.g.dart';
 
 @freezed
-class AdoptionRequest with _$AdoptionRequest {
+abstract class AdoptionRequest with _$AdoptionRequest {
   const factory AdoptionRequest({
 
     @Default('')  String id,
