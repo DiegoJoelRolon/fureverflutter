@@ -201,4 +201,28 @@ class PetProvider extends ChangeNotifier {
   Future<void> deletePet(String petId) async {
     await _db.collection('pets').doc(petId).delete();
   }
+
+  Future<void> updatePet({
+  required String petId,
+  required String name,
+  required String breed,
+  required String description,
+  required String city,
+  required String species,
+  required String gender,
+  required String size,
+  required String ageGroup,
+}) async {
+  await _db.collection('pets').doc(petId).update({
+    'name':        name,
+    'breed':       breed,
+    'description': description,
+    'city':        city,
+    'species':     species,
+    'gender':      gender,
+    'size':        size,
+    'ageGroup':    ageGroup,
+  });
+  // El listener de fetchPets() ya actualizará _pets automáticamente
+}
 }
