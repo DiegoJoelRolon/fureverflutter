@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'auth/AuthGate.dart';
 import 'providers/AuthProvider.dart';
+import 'notificacion/NotificationService.dart';
 import 'providers/PetProvider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await NotificationService.init();
   runApp(const MyApp());
 }
 

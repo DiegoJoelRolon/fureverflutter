@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/PetPost.dart';
 import '../models/AdoptionRequest.dart';
+import '../notificacion/NotificationService.dart';
 
 class PetProvider extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -84,19 +85,41 @@ class PetProvider extends ChangeNotifier {
     });
   }
 
-  void fetchPendingRequests() {
-    final myEmail = _auth.currentUser?.email ?? '';
-    _db.collection('adoptionRequests')
-        .where('ownerId', isEqualTo: myEmail)
-        .where('status', isEqualTo: 'pending')
-        .snapshots()
-        .listen((snapshot) {
-      _pendingRequests = snapshot.docs
-          .map((doc) => AdoptionRequest.fromJson({...doc.data(), 'id': doc.id}))
-          .toList();
-      notifyListeners();
-    });
-  }
+void fetchPendingRequests() {
+
+  final myEmail = _auth.currentUser?.email ?? '';
+
+  _db
+      .collection('adoptionRequests')
+      .where('ownerId', isEqualTo: myEmail)
+      .where('status', isEqualTo: 'pending')
+      .snapshots()
+      .listen((snapshot) {
+
+        for (final doc in snapshot.docChanges) {
+
+          if (doc.type == DocumentChangeType.added) {
+
+            final data = doc.doc.data();
+
+            NotificationService.show(
+              title: 'Nueva solicitud',
+              body:
+                  '${data?['requesterName']} quiere adoptar ${data?['petName']}',
+            );
+          }
+        }
+
+        _pendingRequests = snapshot.docs
+            .map((doc) => AdoptionRequest.fromJson({
+                  ...doc.data(),
+                  'id': doc.id,
+                }))
+            .toList();
+
+        notifyListeners();
+      });
+}
 
   Future<void> adoptPet(String petId) async {
     final adopterEmail = _auth.currentUser?.email ?? '';
