@@ -45,7 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // Equivalente a LaunchedEffect(Unit) { petViewModel.fetchPets() }
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PetProvider>().fetchPets();
+      final petprovider = context.read<PetProvider>();
+      petprovider.fetchPendingRequests();
+      petprovider.fetchPets();
+      
     });
   }
 

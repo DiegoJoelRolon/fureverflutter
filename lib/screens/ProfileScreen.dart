@@ -5,6 +5,7 @@ import '../main.dart';
 import '../providers/AuthProvider.dart';
 import '../providers/PetProvider.dart';
 import '../models/PetPost.dart';
+import 'AdoptionRequestsScreen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ProfileScreen
@@ -30,6 +31,9 @@ class _ProfileScreenState extends State<ProfileScreen>
       duration: const Duration(milliseconds: 500),
     )..forward();
     _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PetProvider>().fetchPendingRequests();
+    });
   }
 
   @override
@@ -82,6 +86,12 @@ class _ProfileScreenState extends State<ProfileScreen>
                   // ── "My posts" ──────────────────────────────────────
                   const _SectionTitle(title: 'My posts'),
                   const SizedBox(height: 12),
+
+                  // ── Banner adopciones ────────────────────────────────────────────
+                  _AdoptionRequestBanner(
+                    pendingCount: petProvider.pendingRequests.length,
+                  ),
+                  const SizedBox(height: 20),
 
                   if (available.isEmpty && adopted.isEmpty)
                     const _EmptyState(
@@ -1050,6 +1060,114 @@ class _SheetDropdown extends StatelessWidget {
           )
           .toList(),
       onChanged: onChanged,
+    );
+  }
+}
+
+
+class _AdoptionRequestBanner extends StatelessWidget {
+  final int pendingCount;
+  const _AdoptionRequestBanner({required this.pendingCount});
+ 
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const AdoptionRequestsScreen(),
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            // Ícono con fondo rosado
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFCE4EC),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.pets_rounded,
+                color: Colors.red,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+ 
+            // Textos
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Adoption Requests',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.brownDark,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    pendingCount > 0
+                        ? '$pendingCount pending '
+                            '${pendingCount == 1 ? 'request' : 'requests'}'
+                        : 'No pending requests',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color:
+                          pendingCount > 0 ? Colors.red : AppColors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+ 
+            // Badge numérico (solo si hay pendientes)
+            if (pendingCount > 0) ...[
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  '$pendingCount',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
+ 
+            // Flecha
+            const Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: AppColors.grey,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
