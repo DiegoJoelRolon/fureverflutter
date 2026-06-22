@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fureverflutter/providers/TranslationProvider.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import '../providers/AuthProvider.dart';
@@ -47,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     final authProvider = context.watch<AuthProvider>();
     final petProvider = context.watch<PetProvider>();
     final user = authProvider.currentUser;
-
+    final t = context.watch<TranslationProvider>();
     if (user == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -84,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
                   // ── "My posts" ──────────────────────────────────────
-                  const _SectionTitle(title: 'My posts'),
+                   _SectionTitle(title: t.translate('Myposts')),
                   const SizedBox(height: 12),
 
                   // ── Banner adopciones ────────────────────────────────────────────
@@ -94,9 +95,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                   const SizedBox(height: 20),
 
                   if (available.isEmpty && adopted.isEmpty)
-                    const _EmptyState(
+                     _EmptyState(
                       icon: Icons.pets_outlined,
-                      message: 'Todavía no publicaste ninguna mascota.',
+                      message: t.translate('nopetspublished'),
                     )
                   else ...[
                     ...available.map(
@@ -109,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                     ),
                     if (adopted.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      const _SectionTitle(title: 'Adoptadas'),
+                      _SectionTitle(title: t.translate('adopteds')),
                       const SizedBox(height: 12),
                       ...adopted.map(
                         (pet) => _PetCard(
@@ -156,13 +157,14 @@ class _ProfileScreenState extends State<ProfileScreen>
     PetPost pet,
     PetProvider petProvider,
   ) async {
+    final t = context.watch<TranslationProvider>();
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Eliminar mascota'),
         content: Text(
-          '¿Seguro que querés eliminar a ${pet.name}? Esta acción no se puede deshacer.',
+          t.translate('erasepet') + ' ${pet.name}? ' + t.translate('erasepet2'),
         ),
         actions: [
           TextButton(
@@ -211,16 +213,17 @@ class _ProfileScreenState extends State<ProfileScreen>
     BuildContext context,
     AuthProvider authProvider,
   ) async {
+    final t = context.watch<TranslationProvider>();
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Cerrar sesión'),
-        content: const Text('¿Seguro que querés salir?'),
+        title:  Text(t.translate('signout')),
+        content:  Text(t.translate('signoutmessage')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+            child:  Text(t.translate('cancel')), // 'Cancelar'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.brownDark),

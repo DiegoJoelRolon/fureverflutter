@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fureverflutter/providers/TranslationProvider.dart';
 import 'package:provider/provider.dart';
 import '../models/PetPost.dart';
 import '../providers/AuthProvider.dart';
@@ -100,7 +101,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final petProvider  = context.watch<PetProvider>();
-
+    final t = context.watch<TranslationProvider>();
     final pet = petProvider.pets.firstWhere(
       (p) => p.id == widget.petId,
       orElse: () => const PetPost(id: '', name: 'Cargando...'),
@@ -257,7 +258,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                         Expanded(child: _InfoChip(
                           icon:      Icons.person,
                           label:     'Género',
-                          value:     getTranslation(pet.gender),
+                          value:     t.translate(pet.gender),
                           color:     const Color(0xFFE3F2FD),
                           iconColor: const Color(0xFF1565C0),
                         )),
@@ -266,7 +267,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                         Expanded(child: _InfoChip(
                           icon:      Icons.cake,
                           label:     'Edad',
-                          value:     getTranslation(pet.ageGroup),
+                          value:     t.translate(pet.ageGroup),
                           color:     const Color(0xFFFFF9C4),
                           iconColor: const Color(0xFFF57F17),
                         )),
@@ -275,7 +276,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                         Expanded(child: _InfoChip(
                           icon:      Icons.straighten,
                           label:     'Tamaño',
-                          value:     getTranslation(pet.size),
+                          value:     t.translate(pet.size),
                           color:     const Color(0xFFE8F5E9),
                           iconColor: const Color(0xFF2E7D32),
                         )),
@@ -334,7 +335,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                             const Icon(Icons.person, size: 13, color: Color(0xFFBCAAA4)),
                             const SizedBox(width: 4),
                             Text(
-                              'Publicado por ${pet.ownerId}',
+                              t.translate('publishedby') + ' ${pet.ownerId}',
                               style: const TextStyle(fontSize: 12, color: Color(0xFFBCAAA4)),
                             ),
                           ],
@@ -352,8 +353,8 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            '¿Te interesa esta mascota? Escribile directamente:',
+                          Text(
+                            t.translate('areyouinterested'),
                             style: TextStyle(fontSize: 13, color: Color(0xFF9E9E9E)),
                           ),
                           const SizedBox(height: 12),
@@ -376,8 +377,8 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Esta mascota ya encontró su hogar ❤️',
+                          Text(
+                            t.translate('alreadyfoundhome'),
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color:      Color(0xFF3E2723),
@@ -410,15 +411,15 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Row(
-                          children: const [
+                          children:[
                             Icon(Icons.schedule, color: Color(0xFFF57C00), size: 20),
                             SizedBox(width: 10),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Solicitud enviada',
+                                Text(t.translate('requestsent'),
                                   style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFF57C00), fontSize: 14)),
-                                Text('Esperando respuesta del dueño',
+                                Text(t.translate('awaitingresponse'),
                                   style: TextStyle(fontSize: 12, color: Color(0xFF9E9E9E))),
                               ],
                             ),
@@ -434,12 +435,12 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Row(
-                          children: const [
+                          children:  [
                             Icon(Icons.check_circle, color: Color(0xFF388E3C), size: 20),
                             SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                '¡Solicitud aceptada! El dueño te va a contactar.',
+                                t.translate('requestaccepted'),
                                 style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF388E3C), fontSize: 14),
                               ),
                             ),
@@ -490,23 +491,24 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   }
 
   void _showAdoptionDialog(BuildContext context, PetPost pet, PetProvider petProvider) {
+    final t = context.watch<TranslationProvider>();
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape:           RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: Colors.white,
         title: Text(
-          'Solicitar adopción de ${pet.name}',
+          t.translate('requestadoption') + '${pet.name}',
           style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF3E2723), fontSize: 18),
         ),
-        content: const Text(
-          'Se le enviará una solicitud al dueño. Si la acepta, recibirás su contacto para coordinar la adopción.',
+        content: Text(
+          t.translate('requestmessage'),
           style: TextStyle(color: Color(0xFF616161), height: 1.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar', style: TextStyle(color: Color(0xFF9E9E9E))),
+            child: Text(t.translate('cancel'), style: TextStyle(color: Color(0xFF9E9E9E))),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -522,7 +524,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
               backgroundColor: const Color(0xFF5C4033),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('Enviar solicitud', style: TextStyle(fontWeight: FontWeight.w600)),
+            child: Text(t.translate('sendrequest'), style: TextStyle(fontWeight: FontWeight.w600)),
           ),
         ],
       ),

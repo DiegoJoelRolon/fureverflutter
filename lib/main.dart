@@ -6,14 +6,22 @@ import 'auth/AuthGate.dart';
 import 'providers/AuthProvider.dart';
 import 'notificacion/NotificationService.dart';
 import 'providers/PetProvider.dart';
+import 'providers/TranslationProvider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationService.init();
-  runApp(const MyApp());
-}
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TranslationProvider()),
 
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
 // ── Colores de FurEver ────────────────────────────────────────────────────────
 // Centralizados acá para usarlos desde cualquier pantalla con AppColors.brown
 class AppColors {

@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/AuthProvider.dart';
 import '../providers/PetProvider.dart';
+import '../providers/TranslationProvider.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
+    final t = context.watch<TranslationProvider>();
     final currentUser  = context.watch<AuthProvider>().currentUser;
     final allPets      = context.watch<PetProvider>().pets;
 
@@ -17,8 +20,8 @@ class FavoritesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Mis favoritos',
+        title: Text(
+          t.translate('myFavorites'),
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
       ),
@@ -59,19 +62,20 @@ class FavoritesScreen extends StatelessWidget {
 class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final t = context.watch<TranslationProvider>();
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.favorite_border, size: 64, color: Color(0xFFD7CCC8)),
           const SizedBox(height: 16),
-          const Text(
-            'Todavía no tenés favoritos',
+          Text(
+            t.translate('noFavorites'),
             style: TextStyle(fontSize: 16, color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Tocá el corazón en cualquier mascota\npara guardarla acá',
+          Text(
+            t.translate('noFavorites2'),
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 13, color: Color(0xFFBCAAA4), height: 1.4),
           ),

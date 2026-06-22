@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
-
+import 'package:fureverflutter/providers/TranslationProvider.dart';
+import 'package:provider/provider.dart';
 import '../auth/AuthService.dart';
 import 'RegisterScreen.dart';
 
@@ -45,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.watch<TranslationProvider>();
     return Scaffold(
       backgroundColor: const Color(0xFFF4F0EC),
 
@@ -64,8 +66,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                 ),
 
-                const Text(
-                  "Find your soulmate",
+                Text(
+                  t.translate('findyouridealcompanion'),
                   style: TextStyle(fontSize: 18),
                 ),
 
@@ -96,8 +98,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         TextField(
                           controller: passwordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                            hintText: "Password",
+                          decoration: InputDecoration(
+                            hintText: t.translate("password"),
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -114,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               padding: const EdgeInsets.all(16),
                               child: loading
                                   ? const CircularProgressIndicator()
-                                  : const Text("Login"),
+                                  : Text(t.translate('login')),
                             ),
                           ),
                         ),
@@ -133,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                             },
-                            child: const Text("Sign Up"),
+                            child:  Text(t.translate('signup')),
                           ),
                         ),
                       ],

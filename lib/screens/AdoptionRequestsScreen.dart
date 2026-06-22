@@ -1,19 +1,21 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fureverflutter/providers/TranslationProvider.dart';
 import 'package:provider/provider.dart';
 import '../main.dart';
 import '../models/AdoptionRequest.dart';
 import '../providers/PetProvider.dart';
-import 'AdoptionRequestsScreen.dart';
+
 
 class AdoptionRequestsScreen extends StatelessWidget {
   const AdoptionRequestsScreen({super.key});
+  
 
   @override
   Widget build(BuildContext context) {
     final petProvider = context.watch<PetProvider>();
     final pending = petProvider.pendingRequests;
-
+    final t = context.watch<TranslationProvider>();
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
@@ -47,7 +49,7 @@ class AdoptionRequestsScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
               child: Text(
-                'These people want to adopt your pets',
+                t.translate('receivedRequests'),
                 style: TextStyle(fontSize: 13, color: AppColors.grey),
               ),
             ),
@@ -342,9 +344,10 @@ class _PetThumb extends StatelessWidget {
 
 class _EmptyRequests extends StatelessWidget {
   const _EmptyRequests();
-
+  
   @override
   Widget build(BuildContext context) {
+    final t = context.watch<TranslationProvider>();
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -352,7 +355,7 @@ class _EmptyRequests extends StatelessWidget {
           Icon(Icons.inbox_outlined, size: 64, color: AppColors.greyLight),
           const SizedBox(height: 16),
           Text(
-            'No tenés solicitudes pendientes.',
+            t.translate('nopendingrequests'),
             style: TextStyle(color: AppColors.grey, fontSize: 15),
           ),
         ],

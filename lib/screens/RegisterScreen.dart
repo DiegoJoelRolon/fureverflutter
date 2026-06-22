@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:fureverflutter/providers/TranslationProvider.dart';
+import 'package:provider/provider.dart';
 
 import '../models/UserFlutter.dart';
 import '../auth/AuthService.dart';
@@ -81,12 +83,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.watch<TranslationProvider>();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F0EC),
 
       appBar: AppBar(
-        title: const Text("Create Account"),
+        title:  Text(t.translate('createaccount')),
       ),
 
       body: SafeArea(
@@ -109,8 +112,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   TextField(
                     controller: nameController,
-                    decoration: const InputDecoration(
-                      hintText: "First Name",
+                    decoration:  InputDecoration(
+                      hintText: t.translate('firstname'),
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -119,8 +122,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   TextField(
                     controller: lastnameController,
-                    decoration: const InputDecoration(
-                      hintText: "Last Name",
+                    decoration: InputDecoration(
+                      hintText: t.translate('lastname'), //"Last Name",
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -141,8 +144,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextField(
                     controller: passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(
-                      hintText: "Password",
+                    decoration:  InputDecoration(
+                      hintText: t.translate('password'), //"Password",
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -152,8 +155,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextField(
                     controller: phoneController,
                     keyboardType: TextInputType.phone,
-                    decoration: const InputDecoration(
-                      hintText: "Phone",
+                    decoration:  InputDecoration(
+                      hintText: t.translate('phone'), //"Phone",
                       border: OutlineInputBorder(),
                     ),
                   ),
@@ -166,8 +169,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Expanded(
                         child: TextField(
                           controller: cityController,
-                          decoration: const InputDecoration(
-                            hintText: "City",
+                          decoration:  InputDecoration(
+                            hintText: t.translate('city'), //"City",
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -198,7 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         padding: const EdgeInsets.all(16),
                         child: loading
                             ? const CircularProgressIndicator()
-                            : const Text("Sign Up"),
+                            :  Text(t.translate('signup')),
                       ),
                     ),
                   ),
@@ -209,8 +212,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text(
-                      "Already have an account? Sign in",
+                    child:  Text(
+                      t.translate('alreadyhaveaccount'), //"Already have an account? Sign in",
                     ),
                   ),
                 ],

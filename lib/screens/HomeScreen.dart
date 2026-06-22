@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fureverflutter/providers/TranslationProvider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
 import '../providers/AuthProvider.dart';
@@ -6,6 +7,8 @@ import '../providers/PetProvider.dart';
 import '../models/PetPost.dart';
 import 'PetDetailScreen.dart';
 import 'UploadPetScreen.dart';
+import '../translations/Translations.dart';
+
 
 // ─── Utilidad de traducción (igual que en Android) ───────────────────────────
 
@@ -60,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.watch<TranslationProvider>();
     final authProvider = context.watch<AuthProvider>();
     final petProvider  = context.watch<PetProvider>();
 
@@ -161,16 +165,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSearchResults(PetProvider petProvider, AuthProvider authProvider) {
     final results = petProvider.filteredPets;
-
+    final t = context.watch<TranslationProvider>();
     if (results.isEmpty) {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
+          children:[
             Icon(Icons.pets, size: 48, color: Color(0xFFBCAAA4)),
             SizedBox(height: 12),
             Text(
-              'No se encontraron mascotas',
+              t.translate('noPetsfound'),
               style: TextStyle(color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
             ),
           ],
@@ -203,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final cats       = petProvider.cats;
     final puppies    = petProvider.puppies;
     final others     = petProvider.others;
-
+    final t = context.watch<TranslationProvider>();
     final isEmpty = recentPets.isEmpty && dogs.isEmpty && cats.isEmpty &&
                     puppies.isEmpty && others.isEmpty;
 
@@ -222,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '¡Hola, $nombre! 👋',
+                t.translate('hello') + ' $nombre! 👋',
                 style: const TextStyle(
                   fontSize:   22,
                   fontWeight: FontWeight.bold,
@@ -230,8 +234,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 2),
-              const Text(
-                'Encontrá tu compañero perfecto',
+              Text(
+                t.translate('findyouridealcompanion'),
                 style: TextStyle(fontSize: 14, color: Color(0xFF9E9E9E)),
               ),
             ],
@@ -243,11 +247,11 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 80),
             child: Column(
-              children: const [
+              children:  [
                 Icon(Icons.pets, size: 48, color: Color(0xFFBCAAA4)),
                 SizedBox(height: 12),
                 Text(
-                  'No hay mascotas disponibles aún',
+                  t.translate('noPetsfoundyet'),
                   style: TextStyle(color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
                 ),
               ],
@@ -257,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // Recientes
         if (recentPets.isNotEmpty) ...[
           SectionHeader(
-            title:       'Recién llegados',
+            title:       t.translate('newcomers'),
             count:       recentPets.length,
             icon:        Icons.auto_awesome,
             iconTint:    const Color(0xFFF57C00),
@@ -273,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // Perros
         if (dogs.isNotEmpty) ...[
           SectionHeader(
-            title:       'Perros',
+            title:       t.translate('dogs'),
             count:       dogs.length,
             icon:        Icons.pets,
             iconTint:    const Color(0xFF388E3C),
@@ -289,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // Cachorros
         if (puppies.isNotEmpty) ...[
           SectionHeader(
-            title:       'Cachorros',
+            title:       t.translate('puppies'),
             count:       puppies.length,
             icon:        Icons.cruelty_free,
             iconTint:    const Color(0xFF7B1FA2),
@@ -305,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // Gatos
         if (cats.isNotEmpty) ...[
           SectionHeader(
-            title:       'Gatos',
+            title:       t.translate('cats'),
             count:       cats.length,
             icon:        Icons.pets,
             iconTint:    const Color(0xFFC62828),
@@ -321,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // Otros
         if (others.isNotEmpty) ...[
           SectionHeader(
-            title:       'Otros',
+            title:       t.translate('others'),
             count:       others.length,
             icon:        Icons.pets,
             iconTint:    const Color(0xFF5C4033),
