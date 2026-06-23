@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/PetProvider.dart';
+import '../location/LocationHelper.dart';
 
 class UploadPetScreen extends StatefulWidget {
   const UploadPetScreen({super.key});
@@ -12,24 +13,24 @@ class UploadPetScreen extends StatefulWidget {
 }
 
 class _UploadPetScreenState extends State<UploadPetScreen> {
-  // Controladores de texto
   final _nameController        = TextEditingController();
   final _breedController       = TextEditingController();
   final _descriptionController = TextEditingController();
   final _cityController        = TextEditingController();
 
-  // Selecciones
   String _selectedSpecies  = '';
   String _selectedGender   = '';
   String _selectedSize     = '';
   String _selectedAgeGroup = '';
 
-  // Foto
   File? _imageFile;
   final _picker = ImagePicker();
 
-  // Estado
   bool _isUploading = false;
+  bool _loadingLocation = false;
+
+  double _latitude  = 0.0;
+  double _longitude = 0.0;
 
   bool get _isFormValid =>
       _nameController.text.trim().isNotEmpty &&
@@ -45,6 +46,41 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
     _descriptionController.dispose();
     _cityController.dispose();
     super.dispose();
+  }
+
+  // ── Geolocalización ───────────────────────────────────────────────────────
+
+  Future<void> _useCurrentLocation() async {
+    setState(() => _loadingLocation = true);
+
+    try {
+      final result = await LocationHelper.getCurrentLocation();
+
+      setState(() {
+        _latitude  = result.latitude;
+        _longitude = result.longitude;
+        if (result.city.isNotEmpty) {
+          _cityController.text = result.city;
+        }
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ubicación obtenida correctamente'),
+            backgroundColor: Color(0xFF388E3C),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _loadingLocation = false);
+    }
   }
 
   // ── Foto ──────────────────────────────────────────────────────────────────
@@ -119,6 +155,8 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
         size:        _selectedSize,
         ageGroup:    _selectedAgeGroup,
         imageFile:   _imageFile,
+        latitude:    _latitude,
+        longitude:   _longitude,
       );
 
       if (mounted) {
@@ -152,9 +190,9 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
           'Publicar mascota',
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
-        backgroundColor:    const Color(0xFF5C4033),
-        foregroundColor:    Colors.white,
-        elevation:          0,
+        backgroundColor: const Color(0xFF5C4033),
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -215,9 +253,9 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
             // ── Datos básicos ──────────────────────────────────────────────
             _SectionTitle('Datos básicos'),
             const SizedBox(height: 8),
-            _Field(controller: _nameController,        label: 'Nombre *'),
+            _Field(controller: _nameController, label: 'Nombre *'),
             const SizedBox(height: 12),
-            _Field(controller: _breedController,       label: 'Raza'),
+            _Field(controller: _breedController, label: 'Raza'),
             const SizedBox(height: 12),
             _Field(
               controller: _descriptionController,
@@ -230,7 +268,48 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
             // ── Ubicación ──────────────────────────────────────────────────
             _SectionTitle('Ubicación'),
             const SizedBox(height: 8),
-            _Field(controller: _cityController, label: 'Ciudad'),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: _Field(controller: _cityController, label: 'Ciudad'),
+                ),
+                const SizedBox(width: 10),
+                SizedBox(
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: _loadingLocation ? null : _useCurrentLocation,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF5C4033),
+                      side: const BorderSide(color: Color(0xFF5C4033)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: _loadingLocation
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(Icons.my_location, size: 20),
+                  ),
+                ),
+              ],
+            ),
+            if (_latitude != 0 && _longitude != 0) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: const [
+                  Icon(Icons.check_circle, size: 14, color: Color(0xFF388E3C)),
+                  SizedBox(width: 4),
+                  Text(
+                    'Ubicación guardada',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF388E3C)),
+                  ),
+                ],
+              ),
+            ],
 
             const SizedBox(height: 24),
 
@@ -348,7 +427,7 @@ class _Field extends StatelessWidget {
         labelStyle:   const TextStyle(color: Color(0xFF795548)),
         filled:       true,
         fillColor:    Colors.white,
-        border:       OutlineInputBorder(
+        border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide:   const BorderSide(color: Color(0xFFD7CCC8)),
         ),

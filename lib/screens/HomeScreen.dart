@@ -9,7 +9,6 @@ import 'PetDetailScreen.dart';
 import 'UploadPetScreen.dart';
 import '../translations/Translations.dart';
 
-
 // ─── Utilidad de traducción (igual que en Android) ───────────────────────────
 
 String getTranslation(String value) {
@@ -46,12 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Equivalente a LaunchedEffect(Unit) { petViewModel.fetchPets() }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final petprovider = context.read<PetProvider>();
       petprovider.fetchPendingRequests();
       petprovider.fetchPets();
-      
     });
   }
 
@@ -86,7 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Título
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
@@ -104,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                // Barra de búsqueda
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                   child: SizedBox(
@@ -170,12 +165,12 @@ class _HomeScreenState extends State<HomeScreen> {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children:[
-            Icon(Icons.pets, size: 48, color: Color(0xFFBCAAA4)),
-            SizedBox(height: 12),
+          children: [
+            const Icon(Icons.pets, size: 48, color: Color(0xFFBCAAA4)),
+            const SizedBox(height: 12),
             Text(
               t.translate('noPetsfound'),
-              style: TextStyle(color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
+              style: const TextStyle(color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -226,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                t.translate('hello') + ' $nombre! 👋',
+                '${t.translate('hello')} $nombre! 👋',
                 style: const TextStyle(
                   fontSize:   22,
                   fontWeight: FontWeight.bold,
@@ -236,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 2),
               Text(
                 t.translate('findyouridealcompanion'),
-                style: TextStyle(fontSize: 14, color: Color(0xFF9E9E9E)),
+                style: const TextStyle(fontSize: 14, color: Color(0xFF9E9E9E)),
               ),
             ],
           ),
@@ -247,12 +242,12 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 80),
             child: Column(
-              children:  [
-                Icon(Icons.pets, size: 48, color: Color(0xFFBCAAA4)),
-                SizedBox(height: 12),
+              children: [
+                const Icon(Icons.pets, size: 48, color: Color(0xFFBCAAA4)),
+                const SizedBox(height: 12),
                 Text(
                   t.translate('noPetsfoundyet'),
-                  style: TextStyle(color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
+                  style: const TextStyle(color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -460,6 +455,8 @@ class SectionHeader extends StatelessWidget {
 }
 
 // ─── PetCardHorizontal ────────────────────────────────────────────────────────
+// Réplica exacta del PetCardHorizontal de Android:
+// imagen 130dp + IconButton de favorito superpuesto con Stack (Box en Android)
 
 class PetCardHorizontal extends StatelessWidget {
   final PetPost  pet;
@@ -477,29 +474,31 @@ class PetCardHorizontal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onClick,
-      child: SizedBox(
-        width: 160,
-        child: Card(
-          shape:     RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          color:     Colors.white,
-          elevation: 3,
+    return SizedBox(
+      width: 160,
+      child: Card(
+        shape:     RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color:     Colors.white,
+        elevation: 3,
+        margin:    EdgeInsets.zero,
+        clipBehavior: Clip.antiAlias,
+        child: GestureDetector(
+          onTap: onClick,
           child: Stack(
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Imagen
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                    child: _buildImage(pet.imageUrl, height: 180),
+                    child: _buildImage(pet.imageUrl, height: 130),
                   ),
-                  // Info
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           pet.name,
@@ -508,8 +507,8 @@ class PetCardHorizontal extends StatelessWidget {
                             fontSize:   14,
                             color:      Color(0xFF3E2723),
                           ),
-                          maxLines:  1,
-                          overflow:  TextOverflow.ellipsis,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         if (pet.breed?.isNotEmpty == true)
                           Text(
@@ -520,6 +519,7 @@ class PetCardHorizontal extends StatelessWidget {
                           ),
                         const SizedBox(height: 4),
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             if (pet.ageGroup?.isNotEmpty == true)
                               _MiniChip(getTranslation(pet.ageGroup!), Icons.cake),
@@ -537,7 +537,7 @@ class PetCardHorizontal extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   pet.city!,
-                                  style:   const TextStyle(fontSize: 10, color: Color(0xFF9E9E9E)),
+                                  style: const TextStyle(fontSize: 10, color: Color(0xFF9E9E9E)),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -551,23 +551,24 @@ class PetCardHorizontal extends StatelessWidget {
                 ],
               ),
 
-              // Botón favorito
+              // Botón favorito superpuesto (equivalente al IconButton de Android)
               Positioned(
                 top:   4,
                 right: 4,
-                child: GestureDetector(
-                  onTap: onToggleFav,
-                  child: Container(
-                    width:  36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color:  Colors.white.withOpacity(0.80),
-                      shape:  BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isFav ? Icons.favorite : Icons.favorite_border,
-                      size:  16,
-                      color: isFav ? const Color(0xFFC62828) : const Color(0xFF9E9E9E),
+                child: Material(
+                  color: const Color(0xCCFFFFFF),
+                  shape: const CircleBorder(),
+                  child: InkWell(
+                    onTap: onToggleFav,
+                    customBorder: const CircleBorder(),
+                    child: SizedBox(
+                      width:  36,
+                      height: 36,
+                      child: Icon(
+                        isFav ? Icons.favorite : Icons.favorite_border,
+                        size:  16,
+                        color: isFav ? const Color(0xFFC62828) : const Color(0xFF9E9E9E),
+                      ),
                     ),
                   ),
                 ),
@@ -581,6 +582,8 @@ class PetCardHorizontal extends StatelessWidget {
 }
 
 // ─── PetCardVertical (para resultados de búsqueda) ────────────────────────────
+// Réplica exacta del PetCardVertical de Android:
+// imagen 180dp + badge de estado arriba a la izquierda + favorito arriba a la derecha
 
 class PetCardVertical extends StatelessWidget {
   final PetPost  pet;
@@ -600,18 +603,20 @@ class PetCardVertical extends StatelessWidget {
   Widget build(BuildContext context) {
     final disponible = pet.adoptedStatus == 'Disponible';
 
-    return GestureDetector(
-      onTap: onClick,
-      child: Card(
-        shape:     RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color:     Colors.white,
-        elevation: 3,
+    return Card(
+      shape:     RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color:     Colors.white,
+      elevation: 3,
+      margin:    EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: GestureDetector(
+        onTap: onClick,
         child: Stack(
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Imagen + badge de estado
                 Stack(
                   children: [
                     ClipRRect(
@@ -639,11 +644,11 @@ class PetCardVertical extends StatelessWidget {
                     ),
                   ],
                 ),
-                // Datos
                 Padding(
                   padding: const EdgeInsets.all(14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         pet.name,
@@ -662,6 +667,7 @@ class PetCardVertical extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           if (pet.gender?.isNotEmpty   == true) _MiniChip(getTranslation(pet.gender!),   Icons.person),
                           const SizedBox(width: 6),
@@ -686,23 +692,24 @@ class PetCardVertical extends StatelessWidget {
               ],
             ),
 
-            // Botón favorito
+            // Botón favorito superpuesto
             Positioned(
               top:   4,
               right: 4,
-              child: GestureDetector(
-                onTap: onToggleFav,
-                child: Container(
-                  width:  36,
-                  height: 36,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.80),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isFav ? Icons.favorite : Icons.favorite_border,
-                    size:  16,
-                    color: isFav ? const Color(0xFFC62828) : const Color(0xFF9E9E9E),
+              child: Material(
+                color: const Color(0xCCFFFFFF),
+                shape: const CircleBorder(),
+                child: InkWell(
+                  onTap: onToggleFav,
+                  customBorder: const CircleBorder(),
+                  child: SizedBox(
+                    width:  36,
+                    height: 36,
+                    child: Icon(
+                      isFav ? Icons.favorite : Icons.favorite_border,
+                      size:  16,
+                      color: isFav ? const Color(0xFFC62828) : const Color(0xFF9E9E9E),
+                    ),
                   ),
                 ),
               ),
@@ -718,9 +725,9 @@ class PetCardVertical extends StatelessWidget {
 
 class _MiniChip extends StatelessWidget {
   final String   label;
-  final IconData icon;
+  final IconData? icon;
 
-  const _MiniChip(this.label, this.icon);
+  const _MiniChip(this.label, [this.icon]);
 
   @override
   Widget build(BuildContext context) {
@@ -733,8 +740,10 @@ class _MiniChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 10, color: const Color(0xFF5C4033)),
-          const SizedBox(width: 3),
+          if (icon != null) ...[
+            Icon(icon, size: 10, color: const Color(0xFF5C4033)),
+            const SizedBox(width: 3),
+          ],
           Text(
             label,
             style: const TextStyle(
@@ -742,12 +751,17 @@ class _MiniChip extends StatelessWidget {
               color:      Color(0xFF5C4033),
               fontWeight: FontWeight.w500,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
     );
   }
 }
+
+// ─── Helper de imagen ─────────────────────────────────────────────────────────
+
 Widget _buildImage(String? imageUrl, {required double height}) {
   if (imageUrl == null || imageUrl.isEmpty) {
     return Container(

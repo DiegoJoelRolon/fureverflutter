@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/PetPost.dart';
 import '../models/AdoptionRequest.dart';
 import '../notificacion/NotificationService.dart';
+import '../location/LocationHelper.dart';
 
 class PetProvider extends ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -25,7 +26,6 @@ class PetProvider extends ChangeNotifier {
   List<PetPost> get pets => _pets;
   List<AdoptionRequest> get pendingRequests => _pendingRequests;
 
-  // Secciones
   List<PetPost> get recentPets =>
       _pets.where((p) => p.adoptedStatus == 'Disponible').take(10).toList();
 
@@ -118,10 +118,7 @@ class PetProvider extends ChangeNotifier {
   }
 
   void fetchPendingRequests() {
-    print("ENTRO A fetchPendingRequests");
     final myEmail = _auth.currentUser?.email ?? '';
-    print("fetchPendingRequests()");
-    print("Email actual: $myEmail");
 
     _db
         .collection('adoptionRequests')
@@ -129,14 +126,9 @@ class PetProvider extends ChangeNotifier {
         .where('status', isEqualTo: 'pending')
         .snapshots()
         .listen((snapshot) {
-          print("Snapshot recibido");
-          print("Cantidad de docs: ${snapshot.docs.length}");
-          print("Cantidad de cambios: ${snapshot.docChanges.length}");
-
           for (final doc in snapshot.docChanges) {
             if (doc.type == DocumentChangeType.added) {
               final data = doc.doc.data();
-
               NotificationService.show(
                 title: 'Nueva solicitud',
                 body:
@@ -191,11 +183,12 @@ class PetProvider extends ChangeNotifier {
     required String size,
     required String ageGroup,
     File? imageFile,
+    double latitude = 0.0,
+    double longitude = 0.0,
   }) async {
     final uid = _auth.currentUser?.uid ?? '';
     final email = _auth.currentUser?.email ?? '';
 
-    // Convertir imagen a Base64 si hay
     String imageBase64 = '';
     if (imageFile != null) {
       final bytes = await imageFile.readAsBytes();
@@ -219,8 +212,8 @@ class PetProvider extends ChangeNotifier {
       'ownerId': email,
       'ownerUid': uid,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
-      'latitude': 0.0,
-      'longitude': 0.0,
+      'latitude': latitude,
+      'longitude': longitude,
     });
   }
 
@@ -288,6 +281,5 @@ class PetProvider extends ChangeNotifier {
       'size': size,
       'ageGroup': ageGroup,
     });
-    // El listener de fetchPets() ya actualizará _pets automáticamente
   }
 }
