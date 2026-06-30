@@ -348,7 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class _HorizontalPetRow extends StatelessWidget {
   final List<PetPost> pets;
-  final AuthProvider  authProvider;
+  final AuthProvider authProvider;
   final void Function(String) onTap;
 
   const _HorizontalPetRow({
@@ -359,29 +359,29 @@ class _HorizontalPetRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 230,
-          child: ListView.separated(
-            scrollDirection:  Axis.horizontal,
-            padding:          const EdgeInsets.symmetric(horizontal: 16),
-            itemCount:        pets.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (_, i) {
-              final pet   = pets[i];
-              final isFav = authProvider.currentUser?.favorites?.contains(pet.id) ?? false;
-              return PetCardHorizontal(
-                pet:         pet,
-                isFav:       isFav,
-                onToggleFav: () => authProvider.toggleFavorite(pet.id),
-                onClick:     () => onTap(pet.id),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 8),
-      ],
+    return SizedBox(
+      // Alto total de la fila = alto de la tarjeta + aire arriba/abajo,
+      // para que la sombra del Card (elevation) y el texto de ciudad
+      // no se corten contra la siguiente sección.
+      height: 230,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        itemCount: pets.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (_, i) {
+          final pet = pets[i];
+          final isFav =
+              authProvider.currentUser?.favorites?.contains(pet.id) ?? false;
+
+          return PetCardHorizontal(
+            pet: pet,
+            isFav: isFav,
+            onToggleFav: () => authProvider.toggleFavorite(pet.id),
+            onClick: () => onTap(pet.id),
+          );
+        },
+      ),
     );
   }
 }
@@ -455,8 +455,7 @@ class SectionHeader extends StatelessWidget {
 }
 
 // ─── PetCardHorizontal ────────────────────────────────────────────────────────
-// Réplica exacta del PetCardHorizontal de Android:
-// imagen 130dp + IconButton de favorito superpuesto con Stack (Box en Android)
+// Imagen 110dp + bloque de info con altura fija para evitar overflow/recorte.
 
 class PetCardHorizontal extends StatelessWidget {
   final PetPost  pet;
@@ -475,7 +474,8 @@ class PetCardHorizontal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 160,
+      width:  160,
+      height: 225,
       child: Card(
         shape:     RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color:     Colors.white,
@@ -484,92 +484,113 @@ class PetCardHorizontal extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: GestureDetector(
           onTap: onClick,
-          child: Stack(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+              // ── Imagen + botón favorito superpuesto ──────────────────────
+              Stack(
                 children: [
                   ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                    child: _buildImage(pet.imageUrl, height: 130),
+                    child: _buildImage(pet.imageUrl, height: 110),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          pet.name,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize:   14,
-                            color:      Color(0xFF3E2723),
+                  Positioned(
+                    top:   4,
+                    right: 4,
+                    child: Material(
+                      color: const Color(0xCCFFFFFF),
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        onTap: onToggleFav,
+                        customBorder: const CircleBorder(),
+                        child: SizedBox(
+                          width:  32,
+                          height: 32,
+                          child: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            size:  15,
+                            color: isFav ? const Color(0xFFC62828) : const Color(0xFF9E9E9E),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        if (pet.breed?.isNotEmpty == true)
-                          Text(
-                            pet.breed!,
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF795548)),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        const SizedBox(height: 4),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (pet.ageGroup?.isNotEmpty == true)
-                              _MiniChip(getTranslation(pet.ageGroup!), Icons.cake),
-                            const SizedBox(width: 4),
-                            if (pet.size?.isNotEmpty == true)
-                              _MiniChip(getTranslation(pet.size!), Icons.straighten),
-                          ],
-                        ),
-                        if (pet.city?.isNotEmpty == true) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on, size: 12, color: Color(0xFF9E9E9E)),
-                              const SizedBox(width: 2),
-                              Expanded(
-                                child: Text(
-                                  pet.city!,
-                                  style: const TextStyle(fontSize: 10, color: Color(0xFF9E9E9E)),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
+                      ),
                     ),
                   ),
                 ],
               ),
 
-              // Botón favorito superpuesto (equivalente al IconButton de Android)
-              Positioned(
-                top:   4,
-                right: 4,
-                child: Material(
-                  color: const Color(0xCCFFFFFF),
-                  shape: const CircleBorder(),
-                  child: InkWell(
-                    onTap: onToggleFav,
-                    customBorder: const CircleBorder(),
-                    child: SizedBox(
-                      width:  36,
-                      height: 36,
-                      child: Icon(
-                        isFav ? Icons.favorite : Icons.favorite_border,
-                        size:  16,
-                        color: isFav ? const Color(0xFFC62828) : const Color(0xFF9E9E9E),
+              // ── Info — ocupa el resto del espacio disponible ─────────────
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 6, 10, 8), // ← bajé el top de 8 a 6, bottom de 10 a 8
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween, // ← cambiar por esto:
+                    // mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            pet.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize:   14,
+                              color:      Color(0xFF3E2723),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 1), // ← bajé de 2 a 1
+                          SizedBox(
+                            height: 14,
+                            child: pet.breed.isNotEmpty
+                                ? Text(
+                                    pet.breed,
+                                    style: const TextStyle(fontSize: 11, color: Color(0xFF795548)),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  )
+                                : null,
+                          ),
+                        ],
                       ),
-                    ),
+
+                      const SizedBox(height: 6), // ← agregá esto, espacio fijo y chico
+
+                      Wrap(
+                        spacing:   4,
+                        runSpacing: 4,
+                        children: [
+                          if (pet.ageGroup.isNotEmpty)
+                            _MiniChip(getTranslation(pet.ageGroup), Icons.cake),
+                          if (pet.size.isNotEmpty)
+                            _MiniChip(getTranslation(pet.size), Icons.straighten),
+                        ],
+                      ),
+
+                      const SizedBox(height: 6), // ← agregá esto también
+
+                      SizedBox(
+                        height: 16,
+                        child: pet.city.isNotEmpty
+                            ? Row(
+                                children: [
+                                  const Icon(Icons.location_on, size: 12, color: Color(0xFF9E9E9E)),
+                                  const SizedBox(width: 2),
+                                  Expanded(
+                                    child: Text(
+                                      pet.city,
+                                      style: const TextStyle(fontSize: 10, color: Color(0xFF9E9E9E)),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : null,
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -582,8 +603,6 @@ class PetCardHorizontal extends StatelessWidget {
 }
 
 // ─── PetCardVertical (para resultados de búsqueda) ────────────────────────────
-// Réplica exacta del PetCardVertical de Android:
-// imagen 180dp + badge de estado arriba a la izquierda + favorito arriba a la derecha
 
 class PetCardVertical extends StatelessWidget {
   final PetPost  pet;
@@ -621,7 +640,7 @@ class PetCardVertical extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                      child: _buildImage(pet.imageUrl, height: 180),
+                      child: _buildImage(pet.imageUrl, height: 160),
                     ),
                     Positioned(
                       top:  8,
@@ -633,7 +652,7 @@ class PetCardVertical extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          pet.adoptedStatus ?? '',
+                          pet.adoptedStatus,
                           style: TextStyle(
                             fontSize:   11,
                             fontWeight: FontWeight.w500,
@@ -645,7 +664,7 @@ class PetCardVertical extends StatelessWidget {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
@@ -658,31 +677,31 @@ class PetCardVertical extends StatelessWidget {
                           color:      Color(0xFF3E2723),
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         [
-                          getTranslation(pet.species ?? ''),
-                          if (pet.breed?.isNotEmpty == true) pet.breed!,
+                          getTranslation(pet.species),
+                          if (pet.breed.isNotEmpty) pet.breed,
                         ].join(' · '),
                         style: const TextStyle(fontSize: 13, color: Color(0xFF795548)),
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing:    6,
+                        runSpacing: 6,
                         children: [
-                          if (pet.gender?.isNotEmpty   == true) _MiniChip(getTranslation(pet.gender!),   Icons.person),
-                          const SizedBox(width: 6),
-                          if (pet.ageGroup?.isNotEmpty == true) _MiniChip(getTranslation(pet.ageGroup!), Icons.cake),
-                          const SizedBox(width: 6),
-                          if (pet.size?.isNotEmpty     == true) _MiniChip(getTranslation(pet.size!),     Icons.straighten),
+                          if (pet.gender.isNotEmpty)   _MiniChip(getTranslation(pet.gender),   Icons.person),
+                          if (pet.ageGroup.isNotEmpty) _MiniChip(getTranslation(pet.ageGroup), Icons.cake),
+                          if (pet.size.isNotEmpty)     _MiniChip(getTranslation(pet.size),     Icons.straighten),
                         ],
                       ),
-                      if (pet.city?.isNotEmpty == true) ...[
-                        const SizedBox(height: 4),
+                      if (pet.city.isNotEmpty) ...[
+                        const SizedBox(height: 8),
                         Row(
                           children: [
                             const Icon(Icons.location_on, size: 14, color: Color(0xFF9E9E9E)),
                             const SizedBox(width: 2),
-                            Text(pet.city!, style: const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E))),
+                            Text(pet.city, style: const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E))),
                           ],
                         ),
                       ],

@@ -1,18 +1,19 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/AuthProvider.dart';
 import '../providers/PetProvider.dart';
 import '../providers/TranslationProvider.dart';
+import 'PetDetailScreen.dart';
 
 class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({super.key});
-  
 
   @override
   Widget build(BuildContext context) {
-    final t = context.watch<TranslationProvider>();
-    final currentUser  = context.watch<AuthProvider>().currentUser;
-    final allPets      = context.watch<PetProvider>().pets;
+    final t           = context.watch<TranslationProvider>();
+    final currentUser = context.watch<AuthProvider>().currentUser;
+    final allPets     = context.watch<PetProvider>().pets;
 
     final favoritePets = allPets
         .where((pet) => currentUser?.favorites.contains(pet.id) == true)
@@ -22,7 +23,7 @@ class FavoritesScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           t.translate('myFavorites'),
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
       ),
       body: favoritePets.isEmpty
@@ -31,7 +32,8 @@ class FavoritesScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               children: [
                 Text(
-                  '${favoritePets.length} mascota${favoritePets.length != 1 ? 's' : ''} guardada${favoritePets.length != 1 ? 's' : ''}',
+                  '${favoritePets.length} mascota${favoritePets.length != 1 ? 's' : ''} '
+                  'guardada${favoritePets.length != 1 ? 's' : ''}',
                   style: const TextStyle(fontSize: 13, color: Color(0xFF9E9E9E)),
                 ),
                 const SizedBox(height: 12),
@@ -40,11 +42,13 @@ class FavoritesScreen extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: _FavoriteCard(
-                      pet:     pet,
-                      isFav:   isFav,
-                      onTap:   () => Navigator.pushNamed(
-                        context, '/pet_detail',
-                        arguments: pet.id,
+                      pet:         pet,
+                      isFav:       isFav,
+                      onTap:       () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PetDetailScreen(petId: pet.id),
+                        ),
                       ),
                       onToggleFav: () =>
                           context.read<AuthProvider>().toggleFavorite(pet.id),
@@ -57,7 +61,7 @@ class FavoritesScreen extends StatelessWidget {
   }
 }
 
-// ── Estado vacío ───────────────────────────────────────────────────────────────
+// ── Estado vacío ──────────────────────────────────────────────────────────────
 
 class _EmptyState extends StatelessWidget {
   @override
@@ -71,13 +75,15 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             t.translate('noFavorites'),
-            style: TextStyle(fontSize: 16, color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 16, color: Color(0xFF9E9E9E), fontWeight: FontWeight.w500,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             t.translate('noFavorites2'),
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: Color(0xFFBCAAA4), height: 1.4),
+            style: const TextStyle(fontSize: 13, color: Color(0xFFBCAAA4), height: 1.4),
           ),
         ],
       ),
@@ -85,11 +91,11 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-// ── Card de favorito ─────────────────────────────────────────────────────────
+// ── Card de favorito ──────────────────────────────────────────────────────────
 
 class _FavoriteCard extends StatelessWidget {
-  final dynamic pet; // PetPost
-  final bool isFav;
+  final dynamic      pet;
+  final bool         isFav;
   final VoidCallback onTap;
   final VoidCallback onToggleFav;
 
@@ -106,26 +112,19 @@ class _FavoriteCard extends StatelessWidget {
 
     return Card(
       child: InkWell(
-        onTap: onTap,
+        onTap:        onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Imagen (soporta Base64 y URL)
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  pet.imageUrl,
-                  width: 80, height: 80,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 80, height: 80,
-                    color: const Color(0xFFEDE0D4),
-                    child: const Icon(Icons.pets, color: Color(0xFF5C4033)),
-                  ),
-                ),
+                child: _buildFavImage(pet.imageUrl as String?),
               ),
+
               const SizedBox(width: 14),
 
               // Info
@@ -134,7 +133,7 @@ class _FavoriteCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      pet.name,
+                      pet.name as String,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize:   16,
@@ -142,19 +141,19 @@ class _FavoriteCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      pet.breed.isNotEmpty
+                      (pet.breed as String).isNotEmpty
                           ? '${pet.species} · ${pet.breed}'
-                          : pet.species,
+                          : pet.species as String,
                       style: const TextStyle(fontSize: 13, color: Color(0xFF795548)),
                     ),
-                    if (pet.city.isNotEmpty) ...[
+                    if ((pet.city as String).isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Row(
                         children: [
                           const Icon(Icons.location_on, size: 12, color: Color(0xFF9E9E9E)),
                           const SizedBox(width: 2),
                           Text(
-                            pet.city,
+                            pet.city as String,
                             style: const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
                           ),
                         ],
@@ -170,7 +169,7 @@ class _FavoriteCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        pet.adoptedStatus,
+                        pet.adoptedStatus as String,
                         style: TextStyle(
                           fontSize:   11,
                           fontWeight: FontWeight.w500,
@@ -184,7 +183,7 @@ class _FavoriteCard extends StatelessWidget {
                 ),
               ),
 
-              // Boton quitar favorito
+              // Botón quitar favorito
               IconButton(
                 onPressed: onToggleFav,
                 icon: Icon(
@@ -194,8 +193,8 @@ class _FavoriteCard extends StatelessWidget {
                 ),
                 style: IconButton.styleFrom(
                   backgroundColor: const Color(0xFFF5F0EB),
-                  shape: const CircleBorder(),
-                  fixedSize: const Size(40, 40),
+                  shape:           const CircleBorder(),
+                  fixedSize:       const Size(40, 40),
                 ),
               ),
             ],
@@ -204,4 +203,34 @@ class _FavoriteCard extends StatelessWidget {
       ),
     );
   }
+}
+
+// ── Helper imagen (Base64 + URL) ──────────────────────────────────────────────
+
+Widget _buildFavImage(String? imageUrl) {
+  if (imageUrl == null || imageUrl.isEmpty) {
+    return Container(
+      width: 80, height: 80,
+      color: const Color(0xFFEDE0D4),
+      child: const Icon(Icons.pets, color: Color(0xFF5C4033)),
+    );
+  }
+  if (imageUrl.startsWith('data:image')) {
+    final base64Str = imageUrl.split(',').last;
+    return Image.memory(
+      base64Decode(base64Str),
+      width: 80, height: 80,
+      fit:   BoxFit.cover,
+    );
+  }
+  return Image.network(
+    imageUrl,
+    width: 80, height: 80,
+    fit:   BoxFit.cover,
+    errorBuilder: (_, __, ___) => Container(
+      width: 80, height: 80,
+      color: const Color(0xFFEDE0D4),
+      child: const Icon(Icons.pets, color: Color(0xFF5C4033)),
+    ),
+  );
 }

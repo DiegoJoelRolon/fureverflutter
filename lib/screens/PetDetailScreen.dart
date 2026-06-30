@@ -491,7 +491,7 @@ class _PetDetailScreenState extends State<PetDetailScreen> {
   }
 
   void _showAdoptionDialog(BuildContext context, PetPost pet, PetProvider petProvider) {
-    final t = context.watch<TranslationProvider>();
+    final t = context.read<TranslationProvider>();
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
