@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/PetPost.dart';
 import '../providers/AuthProvider.dart';
 import '../providers/PetProvider.dart';
+import '../providers/TranslationProvider.dart';
 
-// ── Modelos del wizard ────────────────────────────────────────────────────────
 
 class _WizardOption {
   final String value;
@@ -40,60 +41,79 @@ class _WizardStep {
   });
 }
 
-final _wizardSteps = [
+List<_WizardStep> _buildWizardSteps(TranslationProvider t) => [
   _WizardStep(
     key: 'species',
-    question: '¿Qué mascota te imaginás?',
-    subtitle: 'Elegí el tipo de compañero que buscás',
+    question: t.translate('speciesQuestion'),
+    subtitle: t.translate('speciesSubtitle'),
     headerEmoji: '🐾',
     headerBgColor: const Color(0xFFEDE0D4),
     options: [
-      _WizardOption(value: 'Perro',           label: 'Perro',       subtitle: 'Fiel, juguetón y activo',   emoji: '🐕', bgColor: Color(0xFFE8F5E9)),
-      _WizardOption(value: 'Gato',            label: 'Gato',        subtitle: 'Independiente y tranquilo', emoji: '🐈', bgColor: Color(0xFFE8EAF6)),
-      _WizardOption(value: 'Otro',            label: 'Otro',        subtitle: 'Conejo, hurón y más',       emoji: '🐇', bgColor: Color(0xFFFFF3E0)),
-      _WizardOption(value: 'Sin preferencia', label: 'Sorprendeme', subtitle: 'Cualquier tipo de mascota', emoji: '✨', bgColor: Color(0xFFF5F0EB)),
+      _WizardOption(value: 'Perro',           label: t.translate('dog'),       subtitle: t.translate('dogOptionSubtitle'),    emoji: '🐕', bgColor: const Color(0xFFE8F5E9)),
+      _WizardOption(value: 'Gato',            label: t.translate('cat'),       subtitle: t.translate('catOptionSubtitle'),    emoji: '🐈', bgColor: const Color(0xFFE8EAF6)),
+      _WizardOption(value: 'Otro',            label: t.translate('others'),    subtitle: t.translate('othersOptionSubtitle'), emoji: '🐇', bgColor: const Color(0xFFFFF3E0)),
+      _WizardOption(value: 'Sin preferencia', label: t.translate('surpriseMe'),subtitle: t.translate('anySpeciesSubtitle'),   emoji: '✨', bgColor: const Color(0xFFF5F0EB)),
     ],
   ),
   _WizardStep(
     key: 'size',
-    question: '¿De qué tamaño lo imaginás?',
-    subtitle: 'Pensá en el espacio que tenés en casa',
+    question: t.translate('sizeQuestion'),
+    subtitle: t.translate('sizeSubtitle'),
     headerEmoji: '📏',
     headerBgColor: const Color(0xFFE1F5FE),
     options: [
-      _WizardOption(value: 'Pequeño',         label: 'Pequeño',        subtitle: 'Menos de 10kg',   emoji: '🤏', bgColor: Color(0xFFE1F5FE)),
-      _WizardOption(value: 'Mediano',         label: 'Mediano',        subtitle: 'Entre 10 y 25kg', emoji: '👐', bgColor: Color(0xFFE8F5E9)),
-      _WizardOption(value: 'Grande',          label: 'Grande',         subtitle: 'Más de 25kg',     emoji: '🦮', bgColor: Color(0xFFFFEBEE)),
-      _WizardOption(value: 'Sin preferencia', label: 'Sin preferencia',subtitle: 'Sin restricción', emoji: '✨', bgColor: Color(0xFFF5F0EB)),
+      _WizardOption(value: 'Pequeño',         label: t.translate('small'),        subtitle: t.translate('smallSubtitle'),  emoji: '🤏', bgColor: const Color(0xFFE1F5FE)),
+      _WizardOption(value: 'Mediano',         label: t.translate('medium'),       subtitle: t.translate('mediumSubtitle'), emoji: '👐', bgColor: const Color(0xFFE8F5E9)),
+      _WizardOption(value: 'Grande',          label: t.translate('large'),        subtitle: t.translate('largeSubtitle'),  emoji: '🦮', bgColor: const Color(0xFFFFEBEE)),
+      _WizardOption(value: 'Sin preferencia', label: t.translate('noPreference'), subtitle: t.translate('noRestriction'),  emoji: '✨', bgColor: const Color(0xFFF5F0EB)),
     ],
   ),
   _WizardStep(
     key: 'age',
-    question: '¿Qué etapa de vida preferís?',
-    subtitle: 'Cada edad tiene su encanto',
+    question: t.translate('ageQuestion'),
+    subtitle: t.translate('ageSubtitle'),
     headerEmoji: '🎂',
     headerBgColor: const Color(0xFFFFF9C4),
     options: [
-      _WizardOption(value: 'Cachorro',        label: 'Cachorro',       subtitle: 'Menos de 1 año',   emoji: '🍼', bgColor: Color(0xFFFFF9C4)),
-      _WizardOption(value: 'Joven',           label: 'Joven',          subtitle: 'Entre 1 y 3 años', emoji: '⚡', bgColor: Color(0xFFFFEBEE)),
-      _WizardOption(value: 'Adulto',          label: 'Adulto',         subtitle: 'Entre 3 y 8 años', emoji: '🌿', bgColor: Color(0xFFE8F5E9)),
-      _WizardOption(value: 'Senior',          label: 'Senior',         subtitle: 'Más de 8 años',    emoji: '🧡', bgColor: Color(0xFFFCE4EC)),
-      _WizardOption(value: 'Sin preferencia', label: 'Sin preferencia',subtitle: 'Sin restricción',  emoji: '✨', bgColor: Color(0xFFF5F0EB)),
+      _WizardOption(value: 'Cachorro',        label: t.translate('puppy'),        subtitle: t.translate('puppySubtitle'),  emoji: '🍼', bgColor: const Color(0xFFFFF9C4)),
+      _WizardOption(value: 'Joven',           label: t.translate('young'),        subtitle: t.translate('youngSubtitle'),  emoji: '⚡', bgColor: const Color(0xFFFFEBEE)),
+      _WizardOption(value: 'Adulto',          label: t.translate('adult'),        subtitle: t.translate('adultSubtitle'),  emoji: '🌿', bgColor: const Color(0xFFE8F5E9)),
+      _WizardOption(value: 'Senior',          label: t.translate('senior'),       subtitle: t.translate('seniorSubtitle'), emoji: '🧡', bgColor: const Color(0xFFFCE4EC)),
+      _WizardOption(value: 'Sin preferencia', label: t.translate('noPreference'), subtitle: t.translate('noRestriction'),  emoji: '✨', bgColor: const Color(0xFFF5F0EB)),
     ],
   ),
   _WizardStep(
     key: 'gender',
-    question: '¿Tenés preferencia de género?',
-    subtitle: 'Solo para ayudarte a encontrar tu match ideal',
+    question: t.translate('genderQuestion'),
+    subtitle: t.translate('genderSubtitle'),
     headerEmoji: '💙',
     headerBgColor: const Color(0xFFE3F2FD),
     options: [
-      _WizardOption(value: 'Macho',           label: 'Macho',       subtitle: 'Masculino',          emoji: '♂',  bgColor: Color(0xFFE3F2FD)),
-      _WizardOption(value: 'Hembra',          label: 'Hembra',      subtitle: 'Femenino',           emoji: '♀',  bgColor: Color(0xFFFCE4EC)),
-      _WizardOption(value: 'Sin preferencia', label: 'Sorprendeme', subtitle: 'Me da igual',        emoji: '✨', bgColor: Color(0xFFF5F0EB)),
+      _WizardOption(value: 'Macho',           label: t.translate('male'),       subtitle: t.translate('maleSubtitle'),           emoji: '♂',  bgColor: const Color(0xFFE3F2FD)),
+      _WizardOption(value: 'Hembra',          label: t.translate('female'),     subtitle: t.translate('femaleSubtitle'),         emoji: '♀',  bgColor: const Color(0xFFFCE4EC)),
+      _WizardOption(value: 'Sin preferencia', label: t.translate('surpriseMe'), subtitle: t.translate('genderSurpriseSubtitle'), emoji: '✨', bgColor: const Color(0xFFF5F0EB)),
     ],
   ),
 ];
+
+String _translateAttrValue(TranslationProvider t, String value) {
+  const map = {
+    'Perro': 'dog',
+    'Gato': 'cat',
+    'Otro': 'others',
+    'Cachorro': 'puppy',
+    'Joven': 'young',
+    'Adulto': 'adult',
+    'Senior': 'senior',
+    'Pequeño': 'small',
+    'Mediano': 'medium',
+    'Grande': 'large',
+    'Macho': 'male',
+    'Hembra': 'female',
+  };
+  final key = map[value];
+  return key != null ? t.translate(key) : value;
+}
 
 // ── Pantalla principal ────────────────────────────────────────────────────────
 
@@ -164,11 +184,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   Widget build(BuildContext context) {
     // Escuchar cambios en pets para recalcular matchingPets
     context.watch<PetProvider>();
+    final t = context.watch<TranslationProvider>();
+    final steps = _buildWizardSteps(t);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          showResults ? 'Tu match perfecto' : '¿Cómo lo imaginás?',
+          showResults ? t.translate('prefResultsTitle') : t.translate('prefWizardTitle'),
           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
         backgroundColor: const Color(0xFF5C4033),
@@ -192,6 +214,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         child: showResults
             ? _ResultsView(
                 key:                const ValueKey('results'),
+                t:                  t,
                 selections:         selections,
                 matchingPets:       matchingPets,
                 saved:              saved,
@@ -202,7 +225,8 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               )
             : _WizardView(
                 key:         const ValueKey('wizard'),
-                steps:       _wizardSteps,
+                t:           t,
+                steps:       steps,
                 currentStep: currentStep,
                 selections:  selections,
                 onSelect:    _onSelect,
@@ -221,7 +245,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   }
 
   void _onNext() {
-    if (currentStep < _wizardSteps.length - 1) {
+    if (currentStep < _buildWizardSteps(context.read<TranslationProvider>()).length - 1) {
       setState(() => currentStep++);
     } else {
       setState(() => showResults = true);
@@ -263,6 +287,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 // ── Wizard ────────────────────────────────────────────────────────────────────
 
 class _WizardView extends StatelessWidget {
+  final TranslationProvider t;
   final List<_WizardStep> steps;
   final int currentStep;
   final Map<String, String> selections;
@@ -272,6 +297,7 @@ class _WizardView extends StatelessWidget {
 
   const _WizardView({
     super.key,
+    required this.t,
     required this.steps,
     required this.currentStep,
     required this.selections,
@@ -306,7 +332,7 @@ class _WizardView extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Paso ${currentStep + 1} de ${steps.length}',
+            '${t.translate('prefStep')} ${currentStep + 1} ${t.translate('prefStepOf')} ${steps.length}',
             style: const TextStyle(fontSize: 11, color: Color(0xFF9E9E9E)),
           ),
 
@@ -427,7 +453,7 @@ class _WizardView extends StatelessWidget {
                       side:         const BorderSide(color: Color(0xFF5C4033), width: 1.5),
                       foregroundColor: const Color(0xFF5C4033),
                     ),
-                    child: const Text('← Atrás', style: TextStyle(fontWeight: FontWeight.w500)),
+                    child: Text(t.translate('back'), style: const TextStyle(fontWeight: FontWeight.w500)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -444,7 +470,7 @@ class _WizardView extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    isLast ? 'Ver resultados ✓' : 'Siguiente →',
+                    isLast ? t.translate('seeResults') : t.translate('next'),
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -457,7 +483,7 @@ class _WizardView extends StatelessWidget {
               onSelect(step.key, 'Sin preferencia');
               onNext();
             },
-            child: const Text('Saltar este paso', style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 12)),
+            child: Text(t.translate('skipStep'), style: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 12)),
           ),
 
           const SizedBox(height: 8),
@@ -502,6 +528,7 @@ class _StepHeader extends StatelessWidget {
 // ── Resultados ────────────────────────────────────────────────────────────────
 
 class _ResultsView extends StatelessWidget {
+  final TranslationProvider t;
   final Map<String, String> selections;
   final List<PetPost> matchingPets;
   final bool saved;
@@ -512,6 +539,7 @@ class _ResultsView extends StatelessWidget {
 
   const _ResultsView({
     super.key,
+    required this.t,
     required this.selections,
     required this.matchingPets,
     required this.saved,
@@ -525,6 +553,7 @@ class _ResultsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final activeTags = selections.values
         .where((v) => v.isNotEmpty && v != 'Sin preferencia')
+        .map((v) => _translateAttrValue(t, v))
         .toList();
 
     return ListView(
@@ -537,12 +566,12 @@ class _ResultsView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Buscás algo así...', style: TextStyle(fontSize: 13, color: Color(0xFFD7CCC8))),
+              Text(t.translate('lookingForSomethingLike'), style: const TextStyle(fontSize: 13, color: Color(0xFFD7CCC8))),
               const SizedBox(height: 10),
               if (activeTags.isEmpty)
-                const Text(
-                  'Sin filtros — mostrando todas las mascotas',
-                  style: TextStyle(fontSize: 13, color: Color(0xFFD7CCC8)),
+                Text(
+                  t.translate('noFiltersShowAll'),
+                  style: const TextStyle(fontSize: 13, color: Color(0xFFD7CCC8)),
                 )
               else
                 Wrap(
@@ -568,10 +597,10 @@ class _ResultsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${matchingPets.length} mascotas encontradas',
+                    '${matchingPets.length} ${t.translate('petsFound')}',
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF3E2723)),
                   ),
-                  const Text('listas para ser adoptadas', style: TextStyle(fontSize: 13, color: Color(0xFF9E9E9E))),
+                  Text(t.translate('readyForAdoption'), style: const TextStyle(fontSize: 13, color: Color(0xFF9E9E9E))),
                 ],
               ),
               OutlinedButton(
@@ -582,7 +611,7 @@ class _ResultsView extends StatelessWidget {
                   foregroundColor: const Color(0xFF5C4033),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 ),
-                child: const Text('Cambiar', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                child: Text(t.translate('change'), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
               ),
             ],
           ),
@@ -596,21 +625,21 @@ class _ResultsView extends StatelessWidget {
               children: [
                 const Text('🔍', style: TextStyle(fontSize: 48)),
                 const SizedBox(height: 12),
-                const Text(
-                  'No hay mascotas con esas características todavía',
+                Text(
+                  t.translate('noMatchingPets'),
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Color(0xFF9E9E9E)),
+                  style: const TextStyle(fontSize: 14, color: Color(0xFF9E9E9E)),
                 ),
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: onReset,
-                  child: const Text('Probar con otros filtros', style: TextStyle(color: Color(0xFF5C4033))),
+                  child: Text(t.translate('tryOtherFilters'), style: const TextStyle(color: Color(0xFF5C4033))),
                 ),
               ],
             ),
           )
         else
-          ...matchingPets.map((pet) => _ResultPetCard(pet: pet)),
+          ...matchingPets.map((pet) => _ResultPetCard(pet: pet, t: t)),
 
         // Botones finales
         Padding(
@@ -626,8 +655,8 @@ class _ResultsView extends StatelessWidget {
                     icon: Icon(favoritesAdded ? Icons.favorite : Icons.favorite_border, size: 18),
                     label: Text(
                       favoritesAdded
-                          ? '✓ Agregados a favoritos'
-                          : 'Guardar los ${matchingPets.length} en favoritos',
+                          ? t.translate('addedToFavorites')
+                          : '${t.translate('saveAllIn')} ${matchingPets.length} ${t.translate('inFavorites')}',
                       style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                     ),
                     style: ElevatedButton.styleFrom(
@@ -641,7 +670,7 @@ class _ResultsView extends StatelessWidget {
               const SizedBox(height: 8),
               TextButton(
                 onPressed: onReset,
-                child: const Text('Volver a configurar', style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
+                child: Text(t.translate('reconfigure'), style: const TextStyle(color: Color(0xFF9E9E9E), fontSize: 13)),
               ),
             ],
           ),
@@ -651,14 +680,52 @@ class _ResultsView extends StatelessWidget {
   }
 }
 
+// Las fotos se guardan como data URI base64 (ver PetProvider.uploadPet),
+// no como URLs http reales — por eso Image.network no las muestra.
+// Este helper decodifica el base64 y usa Image.memory; si en algún momento
+// se guarda una URL http real, sigue funcionando con Image.network.
+Widget _buildPetImage(String imageUrl, {required double size}) {
+  Widget errorIcon() => Container(
+        width: size, height: size,
+        color: const Color(0xFFEDE0D4),
+        child: const Icon(Icons.pets, color: Color(0xFF5C4033)),
+      );
+
+  if (imageUrl.isEmpty) return errorIcon();
+
+  if (imageUrl.startsWith('data:image')) {
+    try {
+      final base64Str = imageUrl.split(',').last;
+      final bytes = base64Decode(base64Str);
+      return Image.memory(
+        bytes,
+        width: size, height: size,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => errorIcon(),
+      );
+    } catch (_) {
+      return errorIcon();
+    }
+  }
+
+  return Image.network(
+    imageUrl,
+    width: size, height: size,
+    fit: BoxFit.cover,
+    errorBuilder: (_, __, ___) => errorIcon(),
+  );
+}
+
 // ── Card de resultado ─────────────────────────────────────────────────────────
 
 class _ResultPetCard extends StatelessWidget {
   final PetPost pet;
-  const _ResultPetCard({required this.pet});
+  final TranslationProvider t;
+  const _ResultPetCard({required this.pet, required this.t});
 
   @override
   Widget build(BuildContext context) {
+    final species = _translateAttrValue(t, pet.species);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: Card(
@@ -671,16 +738,7 @@ class _ResultPetCard extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  pet.imageUrl,
-                  width: 72, height: 72,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 72, height: 72,
-                    color: const Color(0xFFEDE0D4),
-                    child: const Icon(Icons.pets, color: Color(0xFF5C4033)),
-                  ),
-                ),
+                child: _buildPetImage(pet.imageUrl, size: 72),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -690,16 +748,16 @@ class _ResultPetCard extends StatelessWidget {
                     Text(pet.name,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF3E2723))),
                     Text(
-                      pet.breed.isNotEmpty ? '${pet.species} · ${pet.breed}' : pet.species,
+                      pet.breed.isNotEmpty ? '$species · ${pet.breed}' : species,
                       style: const TextStyle(fontSize: 12, color: Color(0xFF795548)),
                     ),
                     const SizedBox(height: 6),
                     Wrap(
                       spacing: 4,
                       children: [
-                        if (pet.ageGroup.isNotEmpty) _ResultChip(pet.ageGroup),
-                        if (pet.size.isNotEmpty)     _ResultChip(pet.size),
-                        if (pet.gender.isNotEmpty)   _ResultChip(pet.gender),
+                        if (pet.ageGroup.isNotEmpty) _ResultChip(_translateAttrValue(t, pet.ageGroup)),
+                        if (pet.size.isNotEmpty)     _ResultChip(_translateAttrValue(t, pet.size)),
+                        if (pet.gender.isNotEmpty)   _ResultChip(_translateAttrValue(t, pet.gender)),
                       ],
                     ),
                     if (pet.city.isNotEmpty) ...[

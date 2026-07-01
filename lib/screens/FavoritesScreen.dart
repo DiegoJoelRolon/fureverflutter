@@ -32,8 +32,8 @@ class FavoritesScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               children: [
                 Text(
-                  '${favoritePets.length} mascota${favoritePets.length != 1 ? 's' : ''} '
-                  'guardada${favoritePets.length != 1 ? 's' : ''}',
+                  '${favoritePets.length} '+ t.translate('pet')+'${favoritePets.length != 1 ? 's' : ''} '+t.translate('saved')+
+                  '${favoritePets.length != 1 ? 's' : ''}',
                   style: const TextStyle(fontSize: 13, color: Color(0xFF9E9E9E)),
                 ),
                 const SizedBox(height: 12),

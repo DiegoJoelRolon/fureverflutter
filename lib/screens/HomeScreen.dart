@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: const TextStyle(color: Colors.white, fontSize: 13),
                       onChanged: (v) => petProvider.onSearchChanged(v),
                       decoration: InputDecoration(
-                        hintText:  'Buscar por nombre, raza, ciudad…',
+                        hintText:  t.translate('homesearchhint'),
                         hintStyle: const TextStyle(color: Colors.white54, fontSize: 13),
                         prefixIcon: const Icon(Icons.search, color: Colors.white, size: 18),
                         contentPadding: const EdgeInsets.symmetric(vertical: 0),

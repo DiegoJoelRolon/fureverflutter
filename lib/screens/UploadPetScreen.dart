@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:fureverflutter/providers/TranslationProvider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/PetProvider.dart';
@@ -52,7 +53,7 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
 
   Future<void> _useCurrentLocation() async {
     setState(() => _loadingLocation = true);
-
+    final t = context.read<TranslationProvider>();
     try {
       final result = await LocationHelper.getCurrentLocation();
 
@@ -66,8 +67,8 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Ubicación obtenida correctamente'),
+          SnackBar(
+            content: Text(t.translate('locationObtained')),
             backgroundColor: Color(0xFF388E3C),
           ),
         );
@@ -183,11 +184,12 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.read<TranslationProvider>();
     return Scaffold(
       backgroundColor: const Color(0xFFF5F0EB),
       appBar: AppBar(
-        title: const Text(
-          'Publicar mascota',
+        title:Text(
+          t.translate('publishpet'),
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
         backgroundColor: const Color(0xFF5C4033),
@@ -201,7 +203,7 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
           children: [
 
             // ── Foto ───────────────────────────────────────────────────────
-            _SectionTitle('Foto'),
+            _SectionTitle( t.translate('photo')),
             const SizedBox(height: 8),
             GestureDetector(
               onTap: _showPhotoDialog,
@@ -234,13 +236,13 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
                           ),
                         ],
                       )
-                    : const Column(
+                    :Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text('📷', style: TextStyle(fontSize: 40)),
                           SizedBox(height: 8),
                           Text(
-                            'Tocá para agregar una foto',
+                            t.translate('addphotohint'),   
                             style: TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
                           ),
                         ],
@@ -251,28 +253,28 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
             const SizedBox(height: 24),
 
             // ── Datos básicos ──────────────────────────────────────────────
-            _SectionTitle('Datos básicos'),
+            _SectionTitle(t.translate('basicdata')),
             const SizedBox(height: 8),
-            _Field(controller: _nameController, label: 'Nombre *'),
+            _Field(controller: _nameController, label:t.translate('firstname') + ' *'),
             const SizedBox(height: 12),
-            _Field(controller: _breedController, label: 'Raza'),
+            _Field(controller: _breedController, label: t.translate('breed')),
             const SizedBox(height: 12),
             _Field(
               controller: _descriptionController,
-              label:      'Descripción',
+              label:      t.translate('description'),
               maxLines:   4,
             ),
 
             const SizedBox(height: 24),
 
             // ── Ubicación ──────────────────────────────────────────────────
-            _SectionTitle('Ubicación'),
+            _SectionTitle(t.translate('location')),
             const SizedBox(height: 8),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: _Field(controller: _cityController, label: 'Ciudad'),
+                  child: _Field(controller: _cityController, label:t.translate('city')),
                 ),
                 const SizedBox(width: 10),
                 SizedBox(
@@ -300,11 +302,11 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
             if (_latitude != 0 && _longitude != 0) ...[
               const SizedBox(height: 8),
               Row(
-                children: const [
+                children:[
                   Icon(Icons.check_circle, size: 14, color: Color(0xFF388E3C)),
                   SizedBox(width: 4),
                   Text(
-                    'Ubicación guardada',
+                    t.translate('locationsaved'),
                     style: TextStyle(fontSize: 12, color: Color(0xFF388E3C)),
                   ),
                 ],
@@ -314,10 +316,10 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
             const SizedBox(height: 24),
 
             // ── Especie ────────────────────────────────────────────────────
-            _SectionTitle('Especie *'),
+            _SectionTitle(t.translate('specie')+ ' *'),
             const SizedBox(height: 8),
             _ChipGroup(
-              options:  const ['Perro', 'Gato', 'Otro'],
+              options:[t.translate('dog'), t.translate('cat'),t.translate('others')],
               selected: _selectedSpecies,
               onSelect: (v) => setState(() => _selectedSpecies = v),
             ),
@@ -328,7 +330,7 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
             _SectionTitle('Género *'),
             const SizedBox(height: 8),
             _ChipGroup(
-              options:  const ['Macho', 'Hembra'],
+              options:   [t.translate('male') ,t.translate('female')],
               selected: _selectedGender,
               onSelect: (v) => setState(() => _selectedGender = v),
             ),
@@ -336,10 +338,10 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
             const SizedBox(height: 20),
 
             // ── Tamaño ─────────────────────────────────────────────────────
-            _SectionTitle('Tamaño *'),
+            _SectionTitle(t.translate('Size') + ' *'),
             const SizedBox(height: 8),
             _ChipGroup(
-              options:  const ['Pequeño', 'Mediano', 'Grande'],
+              options:[t.translate('small'),t.translate('medium'),t.translate('large')],
               selected: _selectedSize,
               onSelect: (v) => setState(() => _selectedSize = v),
             ),
@@ -347,10 +349,10 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
             const SizedBox(height: 20),
 
             // ── Edad ───────────────────────────────────────────────────────
-            _SectionTitle('Edad *'),
+            _SectionTitle(t.translate('Age') + ' *'),
             const SizedBox(height: 8),
             _ChipGroup(
-              options:  const ['Cachorro', 'Joven', 'Adulto', 'Senior'],
+              options:   [t.translate('puppy'),t.translate('young'),t.translate('adult'),t.translate('senior')],
               selected: _selectedAgeGroup,
               onSelect: (v) => setState(() => _selectedAgeGroup = v),
             ),
@@ -374,8 +376,8 @@ class _UploadPetScreenState extends State<UploadPetScreen> {
                         width: 22, height: 22,
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       )
-                    : const Text(
-                        'Publicar mascota',
+                    :  Text(
+                        t.translate('publishpet'),
                         style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                       ),
               ),

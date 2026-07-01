@@ -157,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     PetPost pet,
     PetProvider petProvider,
   ) async {
-    final t = context.watch<TranslationProvider>();
+    final t = context.read<TranslationProvider>();
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
@@ -213,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen>
     BuildContext context,
     AuthProvider authProvider,
   ) async {
-    final t = context.watch<TranslationProvider>();
+    final t = context.read<TranslationProvider>();
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(

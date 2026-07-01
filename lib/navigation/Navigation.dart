@@ -5,6 +5,7 @@ import '../screens/FavoritesScreen.dart';
 import '../screens/PreferencesScreen.dart';
 import '../screens/ProfileScreen.dart';
 import '../providers/PetProvider.dart';
+import '../providers/TranslationProvider.dart';
 
 class Navigation extends StatefulWidget {
   const Navigation({super.key});
@@ -26,6 +27,7 @@ class _NavigationState extends State<Navigation> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.watch<TranslationProvider>();
     final pages = [
       const HomeScreen(),
       const FavoritesScreen(),
@@ -42,26 +44,26 @@ class _NavigationState extends State<Navigation> {
         onDestinationSelected: (index) {
           setState(() => currentPageIndex = index);
         },
-        destinations: const [
+        destinations:  [
           NavigationDestination(
             icon:         Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
-            label:        'Inicio',
+            label:        t.translate('home'),
           ),
           NavigationDestination(
             icon:         Icon(Icons.favorite_border),
             selectedIcon: Icon(Icons.favorite),
-            label:        'Favoritos',
+            label:        t.translate('favorites'),
           ),
           NavigationDestination(
             icon:         Icon(Icons.search_outlined),
             selectedIcon: Icon(Icons.search),
-            label:        'Mi match',
+            label:        t.translate('mymatch'),
           ),
           NavigationDestination(
             icon:         Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
-            label:        'Perfil',
+            label:        t.translate('profile'),
           ),
         ],
       ),
